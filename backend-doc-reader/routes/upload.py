@@ -26,3 +26,6 @@ def upload():
         return jsonify({"document_id": document_id, "message": "Document processed successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+from fastapi import APIRouter
+
+router = APIRouter()
