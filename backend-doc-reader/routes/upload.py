@@ -42,3 +42,6 @@ async def upload_document(file: UploadFile = File(...)):
         "filename": file.filename,
         "message": "Document uploaded and indexed successfully"
     }
+from fastapi import APIRouter
+
+router = APIRouter()
