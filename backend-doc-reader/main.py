@@ -1,34 +1,16 @@
-from flask import Flask
-from routes.upload import upload_bp
-from routes.ask import ask_bp
-from routes.documents import documents_bp
-import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes import upload, ask, documents
 from services.storage import init_db
+import os
 import uuid
 
-app = Flask(__name__)
+app = FastAPI()
 
-app.register_blueprint(upload_bp)
-app.register_blueprint(ask_bp)
-app.register_blueprint(documents_bp)
+# Ensure folder exists
+os.makedirs("tmp/indexes", exist_ok=True)
 
-if __name__ == "__main__":
-    os.makedirs("tmp/indexes", exist_ok=True)
-    app.run(debug=True)
-
-
-## `requirements.txt`
-
-flask
-pypdf
-python-docx
-langchain
-langchain-community
-faiss-cpu
-sentence-transformers
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -37,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Session middleware
 @app.middleware("http")
 async def session_middleware(request: Request, call_next):
     session_id = request.cookies.get("session_id")
@@ -51,10 +34,12 @@ async def session_middleware(request: Request, call_next):
         )
     return response
 
+# Startup event
 @app.on_event("startup")
 def startup():
     init_db()
 
+# Routers
 app.include_router(upload.router)
 app.include_router(ask.router)
 app.include_router(documents.router)
