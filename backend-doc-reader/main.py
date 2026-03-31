@@ -1,8 +1,26 @@
-from fastapi import FastAPI
-from routes import upload, ask, documents
+from flask import Flask
+from routes.upload import upload_bp
+from routes.ask import ask_bp
+from routes.documents import documents_bp
+import os
 
-app = FastAPI()
+app = Flask(__name__)
 
-app.include_router(upload.router)
-app.include_router(ask.router)
-app.include_router(documents.router)
+app.register_blueprint(upload_bp)
+app.register_blueprint(ask_bp)
+app.register_blueprint(documents_bp)
+
+if __name__ == "__main__":
+    os.makedirs("tmp/indexes", exist_ok=True)
+    app.run(debug=True)
+
+
+## `requirements.txt`
+
+flask
+pypdf
+python-docx
+langchain
+langchain-community
+faiss-cpu
+sentence-transformers
