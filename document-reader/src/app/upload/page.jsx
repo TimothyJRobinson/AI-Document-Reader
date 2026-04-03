@@ -1,14 +1,15 @@
 "use client";
-
 import { useRouter } from "next/navigation";
+import { useDocument } from "@/context/DocumentContext";
 import UploadZone from "@/components/UploadZone";
 
 export default function UploadPage() {
   const router = useRouter();
+  const { setDocumentId } = useDocument();
 
   const handleUploadSuccess = (documentId) => {
-    console.log("document_id received:", documentId);
-    alert("Upload worked! document_id: " + documentId);
+    setDocumentId(documentId);
+    router.push(`/chat?document_id=${documentId}`);
   };
 
   return (
