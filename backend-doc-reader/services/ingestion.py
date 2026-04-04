@@ -12,19 +12,17 @@ INDEX_DIR = "tmp/indexes"
 os.makedirs(INDEXES_DIR, exist_ok=True)
 os.makedirs(INDEX_DIR, exist_ok=True)
 
-# Reuse embedding model
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
-# --- Loader-based ingestion (file path version) ---
 def get_loader(file_path: str, ext: str):
     if ext == ".pdf":
         return PyPDFLoader(file_path)
     elif ext == ".docx":
         return Docx2txtLoader(file_path)
     elif ext == ".txt":
-        return TextLoader(file_path)
+        return TextLoader(file_path, encoding="utf-8")
     else:
         raise ValueError(f"Unsupported file extension: {ext}")
 
@@ -51,8 +49,6 @@ def ingest_document_from_path(file_path: str, document_id: str, ext: str):
 
     return document_id
 
-
-# --- Parsers (file upload version) ---
 def parse_pdf(file) -> str:
     from pypdf import PdfReader
     reader = PdfReader(file)
@@ -72,7 +68,6 @@ PARSERS = {
     "txt": parse_txt,
 }
 
-# --- Main ingestion (upload version) ---
 def ingest_document(file, document_id: str):
     ext = file.filename.rsplit(".", 1)[1].lower()
     parser = PARSERS.get(ext)
@@ -80,12 +75,10 @@ def ingest_document(file, document_id: str):
     if not parser:
         raise ValueError(f"Unsupported file type: {ext}")
 
-    # 1. Parse
     raw_text = parser(file)
     if not raw_text.strip():
         raise ValueError("Document appears to be empty or unreadable")
 
-    # 2. Chunk
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
         chunk_overlap=50,
@@ -94,10 +87,8 @@ def ingest_document(file, document_id: str):
 
     chunks = splitter.create_documents([raw_text])
 
-    # 3. Embed (reuse global model if you want better performance)
     vectorstore = FAISS.from_documents(chunks, embeddings)
 
-    # 4. Save
     index_path = os.path.join(INDEX_DIR, document_id)
     Path(index_path).mkdir(parents=True, exist_ok=True)
     vectorstore.save_local(index_path)
