@@ -5,10 +5,11 @@ import UploadZone from "@/components/UploadZone";
 
 export default function UploadPage() {
   const router = useRouter();
-  const { setDocumentId } = useDocument();
+  const { setDocumentId, setDocumentName } = useDocument();
 
-  const handleUploadSuccess = (documentId) => {
+  const handleUploadSuccess = (documentId, fileName) => {
     setDocumentId(documentId);
+    setDocumentName(fileName);
     router.push(`/chat?document_id=${documentId}`);
   };
 

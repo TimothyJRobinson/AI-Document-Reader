@@ -5,8 +5,9 @@ const DocumentContext = createContext(null);
 
 export function DocumentProvider({ children }) {
   const [documentId, setDocumentId] = useState(null);
+  const [documentName, setDocumentName] = useState("");
   return (
-    <DocumentContext.Provider value={{ documentId, setDocumentId }}>
+    <DocumentContext.Provider value={{ documentId, setDocumentId, documentName, setDocumentName }}>
       {children}
     </DocumentContext.Provider>
   );

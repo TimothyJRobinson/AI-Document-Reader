@@ -19,7 +19,7 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-zinc-50">
+    <div className="h-screen flex flex-col bg-zinc-50 dark: bg-zinc-950">
       <ChatWindow />
     </div>
   );

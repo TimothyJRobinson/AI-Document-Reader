@@ -76,7 +76,8 @@ export default function UploadZone({ onUploadSuccess }) {
 
       const data = await res.json();
       setStatus("Upload successful! Redirecting...");
-      onUploadSuccess(data.document_id);
+      // Pass both document_id and the original filename
+      onUploadSuccess(data.document_id, file.name);
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setStatus("");
